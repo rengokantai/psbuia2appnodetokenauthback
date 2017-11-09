@@ -1,16 +1,35 @@
 var express = require('express')
 var cors = require('cors')
+var bodyParser = require('body-parser')
+var mongoose = require('mongoose')
 var app = express()
+
+var User = require('./models/User.js')
 
 var posts = [
   {message:'ke'}
 ]
 
 app.use(cors())
+app.use(bodyParser.text())
 
 app.get('/posts',(req,res)=>{
   res.send(posts)
 })
-import { ApiService} from './api.service';
+
+app.get('/register',(req,res)=>{
+  var userData = req.body
+  var user = new User(userData);
+  user.save((err,result)=>{
+    if(err){}
+  })
+  res.sendStatus(200)
+})
+
+mongoose.connect('mongodb://root:root@ds155325.mlab.com:55325/psbuia2appnodetokenauthback',{useMongoClient:true},(err)=>{
+  if(!err){
+    console.log('success')
+  }
+})
 
 app.listen(3000)
