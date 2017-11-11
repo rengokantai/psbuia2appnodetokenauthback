@@ -1,4 +1,5 @@
 var mongoose = require('mongoose')
+var bcrypt = require('bcrypt-nodejs')
 
 var userSchema = new mongoose.Schema({
   email:String,
@@ -7,12 +8,23 @@ var userSchema = new mongoose.Schema({
   description:String
 })
 
-module.exports = mongoose.model('User',userSchema)
 
-userSchema.pre('save',next=>{
+// bcrypt.hash('afasdf',null,null,(err,hash)=>{
+//     if(err){}
+  
+// console.log(hash)})
+userSchema.pre('save',function(next){
   var user = this
 
-  if(!user.isModified('password')){
+  if(!user.isModified('pwd')){
     return next()
   }
+
+  bcrypt.hash(user.pwd,null,null,(err,hash)=>{
+    if(err) return next(err)
+    //console.log(hash)
+    user.pwd=hash
+    next()
+  })
 })
+module.exports = mongoose.model('User',userSchema)
