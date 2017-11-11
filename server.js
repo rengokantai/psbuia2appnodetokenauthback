@@ -7,7 +7,7 @@ var app = express()
 //var bcrypt = require('bcrypt-nodejs')
 
 var User = require('./models/User.js')
-var User = require('./models/Post.js')
+var Post= require('./models/Post.js')
 var auth = require('./auth.js')
 mongoose.Promise = Promise
 
