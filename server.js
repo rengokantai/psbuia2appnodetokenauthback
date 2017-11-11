@@ -2,12 +2,12 @@ var express = require('express')
 var cors = require('cors')
 var bodyParser = require('body-parser')
 var mongoose = require('mongoose')
-var jwt = require('jwt-simple')
+
 var app = express()
-var bcrypt = require('bcrypt-nodejs')
+//var bcrypt = require('bcrypt-nodejs')
 
 var User = require('./models/User.js')
-
+var auth = require('./auth.js')
 mongoose.Promise = Promise
 
 var posts = [
@@ -41,48 +41,14 @@ app.get('/profile/:id',async (req,res)=>{
   }
 })
 
-app.post('/register',(req,res)=>{
-  var userData = req.body
-  var user = new User(userData);
-  user.save((err,result)=>{
-    if(err){
-       console.log('error')
-    }
-    res.sendStatus(200)
-  })
-  
-})
+//app.post('/register',auth.register)
 
-app.post('/login',async(req,res)=>{
-  var loginData = req.body
-  var user = await User.findOne({
-    email:loginData.email
-  })
-  if(!user){
-    return res.status(401).send({message:'user invalid'})
-  }
-
-  bcrypt.compare(loginData.pwd,user.pwd,(err,isMatch)=>{
-    if(!isMatch)
-      return res.status(401).send({message:'wrong pass'})
-
-    var payload = {}
-    var token = jwt.encode(payload,'rengokantai')
-  
-    //res.status(200).send({token:token});
-    res.status(200).send({message:'ok'});
-  })
-
-  // if(loginData.pwd!=user.pwd){
-  //   return res.status(401).send({message:'user invalid'})
-  // }
-  
-})
+//app.post('/login',auth.login)
 
 mongoose.connect('mongodb://root:root@ds155325.mlab.com:55325/psbuia2appnodetokenauthback',{useMongoClient:true},(err)=>{
   if(!err){
     console.log('success')
   }
 })
-
+app.use('/auth',auth)
 app.listen(3000)
