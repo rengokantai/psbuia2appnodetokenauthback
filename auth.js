@@ -28,7 +28,7 @@ var User = require('./models/User.js')
     if(!isMatch)
       return res.status(401).send({message:'wrong pass'})
 
-    var payload = {}
+    var payload = {sub:user._id}
     var token = jwt.encode(payload,'rengokantai')
   
     //res.status(200).send({token:token});
