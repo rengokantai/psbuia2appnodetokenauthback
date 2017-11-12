@@ -2,7 +2,7 @@ var express = require('express')
 var cors = require('cors')
 var bodyParser = require('body-parser')
 var mongoose = require('mongoose')
-
+var jwt = require('jwt-simple')
 var app = express()
 //var bcrypt = require('bcrypt-nodejs')
 
@@ -17,6 +17,24 @@ var posts = [
 
 app.use(cors())
 app.use(bodyParser.json())
+
+function checkAuthenticated(req,res,next){
+  if(!req.header('authorization')){
+    return res.status(401).send({message:'Unauthorized. Missing Auth Header'})
+  }
+    var token = req.header('authorization').split(' ')[1]
+
+    var payload = jwt.decode(token,'rengokantai')
+
+    if(!payload){
+      return res.status(401).send({message:'header invalid'})
+    }
+
+    req.userId = payload.sub
+
+    next()
+    console.log(token)
+}
 
 app.get('/posts/:id',async(req,res)=>{
   var author=req.params.id
@@ -35,8 +53,9 @@ app.post('/post',(req,res)=>{
   })
 })
 
-app.get('/users',async (req,res)=>{
+app.get('/users',checkAuthenticated,async (req,res)=>{
   try{
+  console.log(req.userId)
   var users = await User.find({},'-pwd -__v')
   res.send(users)
   } catch(error){

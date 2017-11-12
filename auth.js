@@ -32,7 +32,7 @@ var User = require('./models/User.js')
     var token = jwt.encode(payload,'rengokantai')
   
     //res.status(200).send({token:token});
-    res.status(200).send({message:'ok'});
+    res.status(200).send({token:token});
   })
 
   // if(loginData.pwd!=user.pwd){
