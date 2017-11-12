@@ -42,8 +42,10 @@ app.get('/posts/:id',async(req,res)=>{
   res.send(posts)
 })
 
-app.post('/post',(req,res)=>{
-  var post = new Post(req.body)
+app.post('/post',auth.checkAuthenticated,(req,res)=>{
+  var postData = req.body
+  postData.author = req.userId
+  var post = new Post(postData)
   post.save((err,result)=>{
     if(err){
        console.error('error')
@@ -53,7 +55,7 @@ app.post('/post',(req,res)=>{
   })
 })
 
-app.get('/users',checkAuthenticated,async (req,res)=>{
+app.get('/users',auth.checkAuthenticated,async (req,res)=>{
   try{
   console.log(req.userId)
   var users = await User.find({},'-pwd -__v')
@@ -83,5 +85,5 @@ mongoose.connect('mongodb://root:root@ds155325.mlab.com:55325/psbuia2appnodetoke
     console.log('success')
   }
 })
-app.use('/auth',auth)
+app.use('/auth',auth.router)
 app.listen(3000)
